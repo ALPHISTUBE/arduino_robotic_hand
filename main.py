@@ -45,6 +45,8 @@ while cap.isOpened():
             selectedAngles = [0, 45, 90]  # Example angle values for each range
             ranges = [0, 50, 100]
             # Determine the angle for each finger based on the distance range
+            for finger, distance in zip(["INDEX", "MIDDLE", "RING", "PINKY", "THUMB"], distances):
+                print(finger, "distance:", distance)
             angles = []
             for distance in distances:
                 if distance < ranges[0]:
@@ -53,9 +55,12 @@ while cap.isOpened():
                     angles.append(selectedAngles[1])
                 else:
                     angles.append(selectedAngles[2])
-
             # Send the angles to the Arduino
             send_angles(angles)
+
+            # Draw lines on the image to visualize hand tracking
+            mp_drawing = mp.solutions.drawing_utils
+            mp_drawing.draw_landmarks(image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
     cv2.imshow('Hand Tracking', image)
     if cv2.waitKey(5) & 0xFF == 27:
