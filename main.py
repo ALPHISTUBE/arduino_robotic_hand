@@ -41,20 +41,27 @@ while cap.isOpened():
             # Calculate the distance between the wrist and each finger point
             distances = [math.dist([wrist.x, wrist.y], [finger.x, finger.y]) for finger in finger_points]
 
+            selectedAngles = [0, 90, 180]  # Define the angle values for each finger based on the distance ranges
             # Define the angle values for each finger based on the distance ranges
-            selectedAngles = [0, 45, 90]  # Example angle values for each range
-            ranges = [0, 50, 100]
+            # Modify the ranges variable for each finger
+            ranges = [
+                [0.2, 0.3],  # Range for INDEX finger
+                [0.1, 0.2],  # Range for MIDDLE finger
+                [0.1, 0.2],  # Range for RING finger
+                [0.1, 0.2],  # Range for PINKY finger
+                [0.2, 0.3]   # Range for THUMB finger
+            ]
+
             # Determine the angle for each finger based on the distance range
-            for finger, distance in zip(["INDEX", "MIDDLE", "RING", "PINKY", "THUMB"], distances):
-                print(finger, "distance:", distance)
             angles = []
-            for distance in distances:
-                if distance < ranges[0]:
+            for distance, finger_range in zip(distances, ranges):
+                if distance < finger_range[0]:
                     angles.append(selectedAngles[0])
-                elif distance < ranges[1]:
+                elif distance < finger_range[1]:
                     angles.append(selectedAngles[1])
                 else:
                     angles.append(selectedAngles[2])
+
             # Send the angles to the Arduino
             send_angles(angles)
 
