@@ -6,11 +6,11 @@ Servo servo3;
 Servo servo4;
 Servo servo5;
 
-#define f1 11
-#define f2 10
-#define f3 9
-#define f4 5
-#define f5 6
+#define f1 11 // Thumb
+#define f2 10 // Index
+#define f3 9 // Middle
+#define f4 5 // Ring
+#define f5 6 // Pinky
 
 void setup() {
   Serial.begin(9600);  // Initialize serial communication
@@ -33,9 +33,8 @@ void loop() {
     Servo servos[5] = {servo1, servo2, servo3, servo4, servo5};
 
     // Loop through each servo and move to its target angle
-    for (int i = 0; i < 5; i++) {
-      servos[i].write(angles[i]);  // Move servo to target angle
-      delay(500);  // Delay for 1 second before moving to the next finger
-    }
+    servo1.write(angles[0]);
+    servo2.write(angles[1]);
+    servo3.write(angles[2]);
   }
 }

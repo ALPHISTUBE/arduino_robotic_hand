@@ -23,6 +23,8 @@ def calculate_percentage(min_value, max_value, value):
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
 
+send_angles([0, 0, 0, 0, 0])  # Send initial angles to the Arduino
+
 # Example usage
 cap = cv2.VideoCapture(0)  # Open webcam
 while cap.isOpened():
@@ -33,33 +35,48 @@ while cap.isOpened():
     # Convert the image to RGB and process it with Mediapipe
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = hands.process(image_rgb)
-
+    previousDistances = [0, 0, 0, 0, 0]
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
             # Get the coordinates of the wrist and finger points
             wrist = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
-            finger_points = [hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP],
+            finger_points = [hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP],
+                             hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP],
                              hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP],
                              hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_TIP],
-                             hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP],
-                             hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]]
+                             hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP]]
 
             # Calculate the distance between the wrist and each finger point
             distances = [math.dist([wrist.x, wrist.y], [finger.x, finger.y]) for finger in finger_points]
-
+            if previousDistances:
+                updatedDistances = []
+                for i in range(len(distances)):
+                    if abs(distances[i] - previousDistances[i]) > 0.02:  # Adjust the threshold as needed
+                        updatedDistances.append(distances[i])
+                    else:
+                        updatedDistances.append(previousDistances[i])
+                distances = updatedDistances
+            previousDistances = distances
             selectedAngles = [0, 90, 180]  # Define the angle values for each finger based on the distance ranges
             # Define the angle values for each finger based on the distance ranges
             # Modify the ranges variable for each finger
             ranges = [
+                [0.2974687380462259, 0.3124047333345117],   # Range for THUMB finger
                 [0.20523228396301077, 0.5720734268133739],  # Range for INDEX finger
                 [0.17056102933969877, 0.5965675984232481],  # Range for MIDDLE finger
                 [0.14162196121660425, 0.5539264929940794],  # Range for RING finger
-                [0.1388035388548916, 0.43033979044479204],  # Range for PINKY finger
-                [0.2974687380462259, 0.3124047333345117]   # Range for THUMB finger
+                [0.1388035388548916, 0.43033979044479204]  # Range for PINKY finger
             ]
 
             # Determine the angle for each finger based on the distance range
             angles = []
+
+            # Draw text on the image to display the distances
+            cv2.putText(image, f"Thumb: {distances[0]:.3f}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(image, f"Index: {distances[1]:.3f}", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(image, f"Middle: {distances[2]:.3f}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(image, f"Ring: {distances[3]:.3f}", (10, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(image, f"Pinky: {distances[4]:.3f}", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
             for distance, finger_range in zip(distances, ranges):
                 percentage = calculate_percentage(finger_range[0], finger_range[1], distance)
                 if percentage < 10:
@@ -75,10 +92,6 @@ while cap.isOpened():
             # Draw lines on the image to visualize hand tracking
             mp_drawing = mp.solutions.drawing_utils
             mp_drawing.draw_landmarks(image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-    else:
-        # No hand detected, send 0 for all fingers
-        angles = [0, 0, 0, 0, 0]
-        send_angles(angles)
 
     cv2.imshow('Hand Tracking', image)
     if cv2.waitKey(5) & 0xFF == 27:
