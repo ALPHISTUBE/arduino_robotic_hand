@@ -13,6 +13,12 @@ def send_angles(angles):
     command = ' '.join(map(str, angles)) + '\n'
     arduino.write(command.encode())
 
+# Function to calculate the percentage of a value within a range
+def calculate_percentage(min_value, max_value, value):
+    if min_value == max_value:
+        return 0
+    return (value - min_value) / (max_value - min_value) * 100
+
 # Initialize Mediapipe Hand model
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands()
@@ -55,11 +61,12 @@ while cap.isOpened():
             # Determine the angle for each finger based on the distance range
             angles = []
             for distance, finger_range in zip(distances, ranges):
-                if distance < finger_range[0] + 0.05:
+                percentage = calculate_percentage(finger_range[0], finger_range[1], distance)
+                if percentage < 10:
                     angles.append(selectedAngles[0])
-                elif distance < finger_range[1] / 2:
+                elif percentage < 50:
                     angles.append(selectedAngles[1])
-                elif distance >= finger_range[1]:
+                else:
                     angles.append(selectedAngles[2])
 
             # Send the angles to the Arduino
