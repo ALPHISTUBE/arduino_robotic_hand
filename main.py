@@ -75,6 +75,10 @@ while cap.isOpened():
             # Draw lines on the image to visualize hand tracking
             mp_drawing = mp.solutions.drawing_utils
             mp_drawing.draw_landmarks(image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+    else:
+        # No hand detected, send 0 for all fingers
+        angles = [0, 0, 0, 0, 0]
+        send_angles(angles)
 
     cv2.imshow('Hand Tracking', image)
     if cv2.waitKey(5) & 0xFF == 27:
