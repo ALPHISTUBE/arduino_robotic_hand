@@ -35,6 +35,7 @@ void loop() {
     // Loop through each servo and move to its target angle
     for (int i = 0; i < 5; i++) {
       servos[i].write(angles[i]);  // Move servo to target angle
+      delay(500);  // Delay for 1 second before moving to the next finger
     }
   }
 }
