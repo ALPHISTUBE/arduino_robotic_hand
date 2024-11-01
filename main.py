@@ -45,21 +45,21 @@ while cap.isOpened():
             # Define the angle values for each finger based on the distance ranges
             # Modify the ranges variable for each finger
             ranges = [
-                [0.2, 0.3],  # Range for INDEX finger
-                [0.1, 0.2],  # Range for MIDDLE finger
-                [0.1, 0.2],  # Range for RING finger
-                [0.1, 0.2],  # Range for PINKY finger
-                [0.2, 0.3]   # Range for THUMB finger
+                [0.20523228396301077, 0.5720734268133739],  # Range for INDEX finger
+                [0.17056102933969877, 0.5965675984232481],  # Range for MIDDLE finger
+                [0.14162196121660425, 0.5539264929940794],  # Range for RING finger
+                [0.1388035388548916, 0.43033979044479204],  # Range for PINKY finger
+                [0.2974687380462259, 0.3124047333345117]   # Range for THUMB finger
             ]
 
             # Determine the angle for each finger based on the distance range
             angles = []
             for distance, finger_range in zip(distances, ranges):
-                if distance < finger_range[0]:
+                if distance < finger_range[0] + 0.05:
                     angles.append(selectedAngles[0])
-                elif distance < finger_range[1]:
+                elif distance < finger_range[1] / 2:
                     angles.append(selectedAngles[1])
-                else:
+                elif distance >= finger_range[1]:
                     angles.append(selectedAngles[2])
 
             # Send the angles to the Arduino
