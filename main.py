@@ -51,15 +51,14 @@ while cap.isOpened():
             if previousDistances:
                 updatedDistances = []
                 for i in range(len(distances)):
-                    if abs(distances[i] - previousDistances[i]) > 0.02:  # Adjust the threshold as needed
+                    if abs(distances[i] - previousDistances[i]) > 0.03:  # Adjust the threshold as needed
                         updatedDistances.append(distances[i])
                     else:
                         updatedDistances.append(previousDistances[i])
                 distances = updatedDistances
             previousDistances = distances
             selectedAngles = [0, 90, 180]  # Define the angle values for each finger based on the distance ranges
-            # Define the angle values for each finger based on the distance ranges
-            # Modify the ranges variable for each finger
+
             ranges = [
                 [0.2974687380462259, 0.3124047333345117],   # Range for THUMB finger
                 [0.20523228396301077, 0.5720734268133739],  # Range for INDEX finger
@@ -68,10 +67,8 @@ while cap.isOpened():
                 [0.1388035388548916, 0.43033979044479204]  # Range for PINKY finger
             ]
 
-            # Determine the angle for each finger based on the distance range
             angles = []
 
-            # Draw text on the image to display the distances
             cv2.putText(image, f"Thumb: {distances[0]:.3f}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.putText(image, f"Index: {distances[1]:.3f}", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.putText(image, f"Middle: {distances[2]:.3f}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
@@ -86,10 +83,8 @@ while cap.isOpened():
                 else:
                     angles.append(selectedAngles[2])
 
-            # Send the angles to the Arduino
             send_angles(angles)
 
-            # Draw lines on the image to visualize hand tracking
             mp_drawing = mp.solutions.drawing_utils
             mp_drawing.draw_landmarks(image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
@@ -97,7 +92,6 @@ while cap.isOpened():
     if cv2.waitKey(5) & 0xFF == 27:
         break
 
-# Close the serial connection
 arduino.close()
 cap.release()
 cv2.destroyAllWindows()
