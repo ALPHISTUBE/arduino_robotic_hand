@@ -57,10 +57,10 @@ while cap.isOpened():
                         updatedDistances.append(previousDistances[i])
                 distances = updatedDistances
             previousDistances = distances
-            selectedAngles = [0, 90, 180]  # Define the angle values for each finger based on the distance ranges
+            selectedAngles = [0, 180]  # Define the angle values for each finger based on the distance ranges
 
             ranges = [
-                [0.2974687380462259, 0.3124047333345117],   # Range for THUMB finger
+                [0.2504687380462259, 0.3124047333345117],   # Range for THUMB finger
                 [0.20523228396301077, 0.5720734268133739],  # Range for INDEX finger
                 [0.17056102933969877, 0.5965675984232481],  # Range for MIDDLE finger
                 [0.14162196121660425, 0.5539264929940794],  # Range for RING finger
@@ -76,12 +76,10 @@ while cap.isOpened():
             cv2.putText(image, f"Pinky: {distances[4]:.3f}", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
             for distance, finger_range in zip(distances, ranges):
                 percentage = calculate_percentage(finger_range[0], finger_range[1], distance)
-                if percentage < 10:
+                if percentage < 50:
                     angles.append(selectedAngles[0])
-                elif percentage < 50:
-                    angles.append(selectedAngles[1])
                 else:
-                    angles.append(selectedAngles[2])
+                    angles.append(selectedAngles[1])
 
             send_angles(angles)
 

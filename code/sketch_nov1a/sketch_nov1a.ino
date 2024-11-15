@@ -11,7 +11,8 @@ Servo servo5;
 #define f3 9 // Middle
 #define f4 5 // Ring
 #define f5 6 // Pinky
-
+int angles[5] = {0, 0, 0, 0, 0};
+int preAngles[5] = {0, 0, 0, 0, 0};
 void setup() {
   Serial.begin(9600);  // Initialize serial communication
   // Attach each servo to a different pin
@@ -36,5 +37,7 @@ void loop() {
     servo1.write(angles[0]);
     servo2.write(angles[1]);
     servo3.write(angles[2]);
+    servo3.write(angles[3]);
+    servo3.write(angles[4]);
   }
 }
