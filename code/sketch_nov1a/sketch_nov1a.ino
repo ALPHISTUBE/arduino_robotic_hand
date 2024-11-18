@@ -30,14 +30,10 @@ void loop() {
     for (int i = 0; i < 5; i++) {
       angles[i] = Serial.parseInt();
     }
-    // Array of servo objects for easy looping
-    Servo servos[5] = {servo1, servo2, servo3, servo4, servo5};
-
-    // Loop through each servo and move to its target angle
     servo1.write(angles[0]);
     servo2.write(angles[1]);
     servo3.write(angles[2]);
-    servo3.write(angles[3]);
-    servo3.write(angles[4]);
+    servo4.write(angles[3]);
+    servo5.write(angles[4]);
   }
 }
